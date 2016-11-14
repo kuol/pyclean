@@ -48,6 +48,7 @@ def possible_nums(df, cat_cols, threshold = 5):
     """ Return column names if column item are in the following format:
         *) ' xx.x%   '
         *) '  $xxx '
+        *) ' 12,347' -- TODO
     """
     cols = []
     for x in cat_cols:
@@ -57,6 +58,25 @@ def possible_nums(df, cat_cols, threshold = 5):
             cols.append(x)
     return cols
 
-   
+
+def test_if_float_is_int(x):
+    if np.isnan(x):
+        return True
+    else:
+        return int(x) - x == 0
+
+def analyze_target(df, target, thres_level = 5):
+    num_missing = df[target].isnull().sum()
+    if num_missing > 0:
+        print "[Warning:] Target column has missing values!!"
+    if df[target].dtype == np.float64:
+        if all(df[target].apply(test_if_float_is_int)):
+            df[target] = df[target].apply(lambda x: int(x))
+    if len(set(df[target])) <= thres_level:
+        print "[Warning:] Target column may be categorical!!"
+            
+        
+        
+        
 if __name__ == '__main__':
     main()
