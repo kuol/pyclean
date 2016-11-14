@@ -32,6 +32,7 @@ def without_many_zeros(df, threshold = 0.1):
     result = (df.astype(bool).sum() / float(df.shape[0])) > threshold
     return result.index[result]  
 
+
 def variability_analysis(df, nan_thres = 0.1, zero_thres = 0.1):
     cols = without_many_nans(df, nan_thres)
     print len(cols)
@@ -59,18 +60,27 @@ def possible_nums(df, cat_cols, threshold = 5):
     return cols
 
 
-def test_if_float_is_int(x):
+def float_is_int(x):
     if np.isnan(x):
         return True
     else:
         return int(x) - x == 0
+
+def change_float_is_int(df, num_cols):
+    """ Change float column to int, if it essentially is integer type. """
+    for x in num_cols:
+        if df[x].dtype == np.float64:
+            if all(df[x].apply(float_is_int)):
+                df[x] = df[x].apply(lambda x: int(x))
+
 
 def analyze_target(df, target, thres_level = 5):
     num_missing = df[target].isnull().sum()
     if num_missing > 0:
         print "[Warning:] Target column has missing values!!"
     if df[target].dtype == np.float64:
-        if all(df[target].apply(test_if_float_is_int)):
+        if all(df[target].apply(float_is_int)):
+            print "[Message:] change the target column to integer type."
             df[target] = df[target].apply(lambda x: int(x))
     if len(set(df[target])) <= thres_level:
         print "[Warning:] Target column may be categorical!!"
