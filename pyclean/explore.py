@@ -6,6 +6,7 @@ Created on Thu Nov 10 15:54:46 2016
 """
 import numpy as np
 import pandas as pd
+import re
 
 def main():
     path = "C:/Users/kliu/Documents/Work/201611_Predictive_Adviser/Data/"
@@ -60,7 +61,8 @@ def possible_nums(df, cat_cols, threshold = 5):
     for x in cat_cols:
         n_percent_sign = sum(df[x].apply(lambda x: (str(x).strip()[-1] == '%')))
         n_dollar_sign = sum(df[x].apply(lambda x: (str(x).strip()[0] == '$')))
-        if n_percent_sign > threshold or n_dollar_sign > threshold:
+        n_comma_number = sum(df[x].apply(lambda x: bool(re.match("^[\d\,]*$", x))))
+        if n_percent_sign > threshold or n_dollar_sign > threshold or n_comma_number > threshold:
             cols.append(x)
     return cols
 
