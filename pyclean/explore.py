@@ -32,6 +32,11 @@ def without_many_zeros(df, threshold = 0.1):
     result = (df.astype(bool).sum() / float(df.shape[0])) > threshold
     return result.index[result]  
 
+def null_cols(df):
+    # Empty string will be converted to NaN automatically,
+    # here, we convert white space to NaN, too. 
+    df = df.replace(r'\s+', np.nan, regex=True)
+    return list(df.isnull().any().index)
 
 def variability_analysis(df, nan_thres = 0.1, zero_thres = 0.1):
     cols = without_many_nans(df, nan_thres)
