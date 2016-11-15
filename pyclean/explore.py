@@ -50,13 +50,26 @@ def variability_analysis(df, nan_thres = 0.1, zero_thres = 0.1):
 def check_levels(df, cat_cols):
     levels = df[cat_cols].apply(lambda x: len(set(x))) 
     return levels
- 
+
+def level_distribution(df, cat_cols, threshold = 0.1):
+    cols = []
+    d = {}
+    for x in cat_cols:
+        level_counts = dict(df[x].value_counts())
+        vals = level_counts.values()
+        lowest = min([float(x)/sum(vals) for x in vals])
+        d[x] = level_counts 
+        if lowest < threshold:
+            cols.append(x)
+    return cols, d
+       
 def possible_nums(df, cat_cols, threshold = 5):
     """ Return column names if column item are in the following format:
         *) ' xx.x%   '
         *) '  $xxx '
         *) ' 12,347' -- TODO
     """
+    threshold = min(threshold, df.shape[0]/10)
     cols = []
     for x in cat_cols:
         n_percent_sign = sum(df[x].apply(lambda x: (str(x).strip()[-1] == '%')))
