@@ -85,7 +85,8 @@ def possible_nums(df, cat_cols, threshold = 5):
 #             3) Comma seperated number: 1,234
 #             4) A combination of 2) and 3): $1,235.29
 #=============================================================
-
+def change_int_to_string(df, cols):
+    df[cols] = df[cols].astype(str)
 
 def without_many_nans(df, threshold = 0.1):
     """ Return column names where the percent of not_nans is greater than threshold
