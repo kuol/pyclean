@@ -58,7 +58,7 @@ def cols_int_is_categorical(df, int_cols, threshold = 5):
     return list(df_count[df_count < threshold].index)
     
 
-def possible_nums(df, cat_cols, threshold = 5):
+def cols_possible_nums(df, cat_cols, threshold = 5):
     """ Return column names if column item are in the following format:
         *) ' xx.x%   '
         *) '  $xxx '
@@ -88,6 +88,36 @@ def possible_nums(df, cat_cols, threshold = 5):
 def change_int_to_string(df, cols):
     df[cols] = df[cols].astype(str)
 
+
+#======================================================================
+# Missing value handling:
+#       - Return columns with missing values, the program will convert
+#         white space in string type column to numpy.nan
+#=======================================================================
+def cols_with_null(df):
+    """ Convert whitespace entries to NaN, Return columns with NaN
+    """
+    # Note: Empty string will be converted to NaN automatically,
+    df = df.replace(r'\s+', np.nan, regex=True)
+    return list(df.isnull().any().index)
+
+
+def impute(df, col, strategy = 'value', val = 0):
+    """ Impute missing values (NaN) based on the following strategy:
+            - Fill all missing value with a designate value: val
+            - Fill all missing value with "mean"
+            - Fill all missing value with "median"
+            - Fill all missing value with "most_frequent"
+    """
+    if strategy == 'mean':
+        val = df[col].mean()
+    elif strategy == 'median':
+        val = df[col].median()
+    elif strategy == 'most_frequent':
+        val = df[col].mode()[0]
+    df[col].fillna(val, inplace = True)    
+
+
 def without_many_nans(df, threshold = 0.1):
     """ Return column names where the percent of not_nans is greater than threshold
     """
@@ -99,12 +129,7 @@ def without_many_zeros(df, threshold = 0.1):
     """ 
     result = (df.astype(bool).sum() / float(df.shape[0])) > threshold
     return result.index[result]  
-
-def null_cols(df):
-    # Empty string will be converted to NaN automatically,
-    # here, we convert white space to NaN, too. 
-    df = df.replace(r'\s+', np.nan, regex=True)
-    return list(df.isnull().any().index)
+    
 
 def variability_analysis(df, nan_thres = 0.1, zero_thres = 0.1):
     cols = without_many_nans(df, nan_thres)
