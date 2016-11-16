@@ -99,25 +99,37 @@ def strip_helper(x):
     elif re.search('\.', xx):
         xx = float(xx)
     else:
-        xx = int(xx)
-        
+        xx = int(xx)        
                
 def fix_string_to_number(df, cols):
     df[cols] = df[cols].applymap(strip_helper)
 
 
 #======================================================================
-# Missing value handling:
+# Missing value detection:
 #       - Return columns with missing values, the program will convert
 #         white space in string type column to numpy.nan
 #=======================================================================
-def cols_with_null(df):
+def cols_with_nulls(df):
     """ Convert whitespace entries to NaN, Return columns with NaN
     """
     # Note: Empty string will be converted to NaN automatically,
     df = df.replace(r'\s+', np.nan, regex=True)
     return list(df.isnull().any().index)
+    
+def cols_with_many_nulls(df, threshold = 0.5):
+    """ Return column names, where null values are over percentage of 
+    threshold (50% by default)"""
+    null_stats = dict(df.astype(bool).sum())
+    cols = [k for k, v in null_stats.items() if v > threshold * df.shape[0]]
+    return cols
+    
 
+#======================================================================
+# Missing value handling:
+#       1. If the percentage of missing value is too high, drop the column
+#       2. Impute missing values with 4 strategies.
+#=======================================================================
 
 def impute(df, col, strategy = 'value', val = 0):
     """ Impute missing values (NaN) based on the following strategy:
@@ -133,6 +145,10 @@ def impute(df, col, strategy = 'value', val = 0):
     elif strategy == 'most_frequent':
         val = df[col].mode()[0]
     df[col].fillna(val, inplace = True)    
+
+#======================================================================
+# Variability analysis:
+#=======================================================================
 
 
 def without_many_nans(df, threshold = 0.1):
