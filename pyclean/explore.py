@@ -74,19 +74,36 @@ def cols_possible_nums(df, cat_cols, threshold = 5):
             cols.append(x)
     return cols 
 
-#============================================================
+#==============================================================================
 # Column type fix: 
 #       - Is numeric really numeric?
-#             1) Float may be integer :  change float to integer
+#             1) Float may be integer :  change float to integer (detect & fix)
 #             2) Integer may be categorical: change integer to string
 #       - Is string really string?
 #             1) Percentage: 23%
 #             2) Currency:  $2323.23
 #             3) Comma seperated number: 1,234
 #             4) A combination of 2) and 3): $1,235.29
-#=============================================================
+#==============================================================================
 def change_int_to_string(df, cols):
     df[cols] = df[cols].astype(str)
+
+def strip_helper(x):
+    xx = x.strip()
+    if not len(xx):
+        return np.nan 
+
+    xx = re.sub('[\,\$]', '', xx)
+    if xx[-1] == '%':
+        xx = float(xx[:-1])/100
+    elif re.search('\.', xx):
+        xx = float(xx)
+    else:
+        xx = int(xx)
+        
+               
+def fix_string_to_number(df, cols):
+    df[cols] = df[cols].applymap(strip_helper)
 
 
 #======================================================================
