@@ -122,14 +122,17 @@ def cols_with_many_nulls(df, threshold = 0.5):
     threshold (50% by default)"""
     null_stats = dict(df.astype(bool).sum())
     cols = [k for k, v in null_stats.items() if v > threshold * df.shape[0]]
-    return cols
-    
+    return cols   
 
 #======================================================================
 # Missing value handling:
 #       1. If the percentage of missing value is too high, drop the column
 #       2. Impute missing values with 4 strategies.
 #=======================================================================
+der drop_cols(df, cols):
+    """Delete column cols from df in place"""
+    df.drop(cols, inplace=True, axis=1)
+
 
 def impute(df, col, strategy = 'value', val = 0):
     """ Impute missing values (NaN) based on the following strategy:
