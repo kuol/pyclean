@@ -148,6 +148,13 @@ def impute(df, col, strategy = 'value', val = 0):
     elif strategy == 'most_frequent':
         val = df[col].mode()[0]
     df[col].fillna(val, inplace = True)    
+    
+
+
+#======================================================================
+# Extreme value / Outlier analysis:
+#=======================================================================
+
 
 #======================================================================
 # Variability analysis:
@@ -174,7 +181,10 @@ def variability_analysis(df, nan_thres = 0.1, zero_thres = 0.1):
     cols = without_many_zeros(df, zero_thres)
     print len(cols)
     return df[cols]
-    
+
+#======================================================================
+# Target analysis:
+#======================================================================= 
 def check_levels(df, cat_cols):
     levels = df[cat_cols].apply(lambda x: len(set(x))) 
     return levels
