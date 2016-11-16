@@ -153,8 +153,30 @@ def impute(df, col, strategy = 'value', val = 0):
 
 #======================================================================
 # Extreme value / Outlier analysis:
+#   - Numeric columns:
+#       1. Single column: Quantile
+#       2. Single column: 3-sigma
+#       3. Multiple column: Mahalanobis distance
+#       4. Multiple column: K-nearest neighbor
+#   - String columns:
+#       1. Outlier -- umbalanced
 #=======================================================================
+def detect_outliers_single(df, col, strategy = 'quantile'):
+    if df[col].dtype.name == 'object':
+        print "[Error]: Outlier detection is only for numeric columns at the moment"
+        return
+    if s.isnull().any():
+        print "[Error]: There are missing values in the column. ", \
+            "Please drop the column or impute the missing values first."
 
+    s = df[col]
+    if strategy == '3sigma': 
+        outliers = s[(s-s.mean()).abs() > 3 * s.std()]
+    else:
+        outliers = s[(s > s.quantile(.25)) & (s < s.quantile(.75))]
+    return outliers
+    
+    
 
 #======================================================================
 # Variability analysis:
@@ -184,6 +206,11 @@ def variability_analysis(df, nan_thres = 0.1, zero_thres = 0.1):
 
 #======================================================================
 # Target analysis:
+#       1. Missing values 
+#           - Records with target missing are used for testing set.
+#           - Otherwise, discard these records.
+#       2. Integer, but actually is categorical
+#       3. Categorical target: very imbalanced
 #======================================================================= 
 def check_levels(df, cat_cols):
     levels = df[cat_cols].apply(lambda x: len(set(x))) 
@@ -213,7 +240,11 @@ def analyze_target(df, target, thres_level = 5):
     if len(set(df[target])) <= thres_level:
         print "[Warning:] Target column may be categorical!!"
             
-        
+#======================================================================
+# Column analysis:
+#       1. Are there too many columns?
+#       2. Do some of these columns linearly dependent?
+#=======================================================================       
         
         
 if __name__ == '__main__':
