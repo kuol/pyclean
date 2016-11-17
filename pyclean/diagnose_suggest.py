@@ -62,7 +62,8 @@ def cols_possible_nums(df, cat_cols, threshold = 5):
     """ Return column names if column item are in the following format:
         *) ' xx.x%   '
         *) '  $xxx '
-        *) ' 12,347' -- TODO
+        *) ' 12,347' 
+        *) ' $1,234 '
     """
     threshold = min(threshold, df.shape[0]/10)
     cols = []
@@ -129,7 +130,7 @@ def cols_with_many_nulls(df, threshold = 0.5):
 #       1. If the percentage of missing value is too high, drop the column
 #       2. Impute missing values with 4 strategies.
 #=======================================================================
-der drop_cols(df, cols):
+def drop_cols(df, cols):
     """Delete column cols from df in place"""
     df.drop(cols, inplace=True, axis=1)
 
