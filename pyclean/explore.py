@@ -156,10 +156,10 @@ def impute(df, col, strategy = 'value', val = 0):
 #   - Numeric columns:
 #       1. Single column: Quantile
 #       2. Single column: 3-sigma
-#       3. Multiple column: Mahalanobis distance
-#       4. Multiple column: K-nearest neighbor
+#       3. Multiple column: Mahalanobis distance TODO
+#       4. Multiple column: K-nearest neighbor TODO
 #   - String columns:
-#       1. Outlier -- umbalanced
+#       1. Outlier -- umbalanced TODO
 #=======================================================================
 def detect_outliers_single(df, col, strategy = 'quantile'):
     if df[col].dtype.name == 'object':
@@ -178,10 +178,16 @@ def detect_outliers_single(df, col, strategy = 'quantile'):
     
     
 
-#======================================================================
+#============================================================================
 # Variability analysis:
-#=======================================================================
-
+#       - Numeric columns: check if standard deviation < threshold
+#       - Categorical columns: check if minority class percentage < threshold
+#============================================================================
+def check_std(df, num_cols, threshold = 0.01):
+    """ Return column names, whose standard deviation is less than the threshold"""
+    stds = dict(df.std())
+    cols = [k for k, v in stds.items() if v < threshold]
+    return cols
 
 def without_many_nans(df, threshold = 0.1):
     """ Return column names where the percent of not_nans is greater than threshold
