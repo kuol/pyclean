@@ -54,8 +54,13 @@ class TestMissingValueAnalysis(unittest.TestCase):
         self.assertEqual(temp, ['a','b','c'])
 
     def test_cols_with_many_nulls(self):
+        ds.cols_with_nulls(self.df)
         temp = ds.cols_with_many_nulls(self.df)
         self.assertEqual(temp, ['a'])
+
+    def test_drop_cols(self):
+        ds.drop_cols(self.df, ['a'])
+        self.assertEqual(list(self.df.columns), ['b','c'])
 
 if __name__ == '__main__':
     unittest.main()

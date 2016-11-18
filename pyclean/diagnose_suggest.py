@@ -136,7 +136,6 @@ def cols_with_nulls(df):
 def cols_with_many_nulls(df, threshold = 0.5):
     """ Return column names, where null values are over percentage of 
     threshold (50% by default)"""
-    df.replace(r'^\s*$', np.nan, regex=True, inplace=True) # -- is this necessary after running cols_with_nulls??? TODO 
     null_stats = dict(df.isnull().sum())
     cols = [k for k, v in null_stats.items() if v > threshold * df.shape[0]]
     return cols   
