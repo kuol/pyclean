@@ -34,7 +34,12 @@ class TestDiagnose(unittest.TestCase):
     def test_cols_possible_nums(self):
         temp = ds.cols_possible_nums(self.ddf,list(self.ddf.columns))
         self.assertEqual(temp, ['a','b','c'])
-
+    
+    def test_fix_string_to_number(self):
+        ds.fix_string_to_number(self.ddf, ['a', 'b', 'c'])
+        self.assertItemsEqual(self.ddf['a'], [123.45, 234, 12343])
+        self.assertItemsEqual(self.ddf['b'], [2.34, 0.1234, 0.12])
+        self.assertItemsEqual(self.ddf['c'], [1234, 12342, 123342])
 
 
 
