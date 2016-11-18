@@ -157,6 +157,9 @@ def impute(df, col, strategy = 'value', val = 0):
             - Fill all missing value with "median"
             - Fill all missing value with "most_frequent"
     """
+    if len(col) != 1:
+        print "[Error]: you need to provide 1 column name for imputation!"
+        return
     if strategy == 'mean':
         val = df[col].mean()
     elif strategy == 'median':
