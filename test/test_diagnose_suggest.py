@@ -1,14 +1,15 @@
 import unittest
+import numpy as np
 import pandas as pd
 from pyclean import diagnose_suggest
 import pyclean.diagnose_suggest as ds
 
-class TestDiagnose(unittest.TestCase):
+class TestColumnTypeAnalysis(unittest.TestCase):
     def setUp(self):
         d = {'a': ['we2', '%3a8', '23']*10,
              'b': range(30),
              'c': [1.2, 12, 34.0]*10,
-             'd': [1.0, 2.0]*15,}
+             'd': [1.0, 2.0]*15}
         self.df = pd.DataFrame.from_dict(d)
 
         dd = {'a': [' $123.45', '$ 234', '$12,343'],
@@ -41,8 +42,16 @@ class TestDiagnose(unittest.TestCase):
         self.assertItemsEqual(self.ddf['b'], [2.34, 0.1234, 0.12])
         self.assertItemsEqual(self.ddf['c'], [1234, 12342, 123342])
 
+class TestMissingValueAnalysis(unittest.TestCase):
+    def setUp(self):
+        d = {'a': ['', '   \n', 'ha']*10,
+             'b': [' ', 'John', 'Jane']*10,
+             'c': [1, 5, np.nan]*10}
+        self.df = pd.DataFrame.from_dict(d)
 
-
+    def test_cols_with_nulls(self):
+        temp = ds.cols_with_nulls(self.df)
+        self.assertEqual(temp, ['a','b','c'])
 
 if __name__ == '__main__':
     unittest.main()
