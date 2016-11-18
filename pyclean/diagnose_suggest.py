@@ -130,14 +130,18 @@ def cols_with_nulls(df):
     """ Convert whitespace entries to NaN, Return columns with NaN
     """
     # Note: Empty string will be converted to NaN automatically,
-    df = df.replace(r'\s+', np.nan, regex=True)
+    df.replace(r'^\s*$', np.nan, regex=True, inplace=True)
     return list(df.isnull().any().index)
     
 def cols_with_many_nulls(df, threshold = 0.5):
     """ Return column names, where null values are over percentage of 
     threshold (50% by default)"""
-    null_stats = dict(df.astype(bool).sum())
-    cols = [k for k, v in null_stats.items() if v > threshold * df.shape[0]]
+    # print df
+    not_null_stats = dict(df.astype(bool).sum())
+    print not_null_stats
+    cols = [k for k, v in not_null_stats.items() if v < threshold * df.shape[0]]
+    print df.shape[0]
+    print cols
     return cols   
 
 #======================================================================
