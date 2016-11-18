@@ -67,6 +67,11 @@ class TestMissingValueAnalysis(unittest.TestCase):
         ds.impute(self.df, 'a', strategy = 'value', val = 'ha')
         self.assertItemsEqual(self.df['a'], ['ha']*30)
 
+    def test_impute_mean(self):
+        ds.cols_with_nulls(self.df)
+        ds.impute(self.df, 'c', strategy = 'mean')
+        self.assertItemsEqual(self.df['c'], [1, 5, 3]*10)
+
 
 if __name__ == '__main__':
     unittest.main()
