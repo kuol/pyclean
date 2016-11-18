@@ -62,15 +62,22 @@ def cols_possible_nums(df, cat_cols, threshold = 5):
     """ Return column names if column item are in the following format:
         *) ' xx.x%   '
         *) '  $xxx '
-        *) ' 12,347' 
+        *) ' 12,347': 
+            ==> Note: The regex search should return True/False accordingly 
+                      for the following case:
+                    {'123'          : True,
+                     '1,123'        : True,
+                     '1,123,123,123': True,
+                     '1,1234'       : False,
+                     '1234'         : False}
         *) ' $1,234 '
     """
     threshold = min(threshold, df.shape[0]/10)
     cols = []
     for x in cat_cols:
         n_percent_sign = sum(df[x].apply(lambda x: (str(x).strip()[-1] == '%')))
-        n_dollar_sign = sum(df[x].apply(lambda x: (str(x).strip()[0] == '$')))
-        n_comma_number = sum(df[x].apply(lambda x: bool(re.match("^[\d\,]*$", x))))
+        n_dollar_sign = sum(df[x].apply(lambda x: bool(re.match('^\$\d+\.*\d{0,2}$', str(x).strip()))))
+        n_comma_number = sum(df[x].apply(lambda x: bool(re.search('(?:\,\d{3}$|^\d{0,3}$)', str(x).strip()))))
         if n_percent_sign > threshold or n_dollar_sign > threshold or n_comma_number > threshold:
             cols.append(x)
     return cols 
@@ -100,8 +107,9 @@ def strip_helper(x):
     elif re.search('\.', xx):
         xx = float(xx)
     else:
-        xx = int(xx)        
-               
+        xx = int(xx)       
+    return xx
+           
 def fix_string_to_number(df, cols):
     df[cols] = df[cols].applymap(strip_helper)
 
