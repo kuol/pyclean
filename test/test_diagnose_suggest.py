@@ -62,5 +62,11 @@ class TestMissingValueAnalysis(unittest.TestCase):
         ds.drop_cols(self.df, ['a'])
         self.assertEqual(list(self.df.columns), ['b','c'])
 
+    def test_impute_value(self):
+        ds.cols_with_nulls(self.df)
+        ds.impute(self.df, 'a', strategy = 'value', val = 'ha')
+        self.assertItemsEqual(self.df['a'], ['ha']*30)
+
+
 if __name__ == '__main__':
     unittest.main()
