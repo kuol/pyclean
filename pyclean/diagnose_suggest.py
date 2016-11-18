@@ -61,6 +61,12 @@ def cols_int_is_categorical(df, int_cols, threshold = 5):
 def cols_possible_nums(df, cat_cols, threshold = 5):
     """ Return column names if column item are in the following format:
         *) ' xx.x%   '
+            ==> Note: The regex search should return True/False accordingly
+                      for the following case:
+                    {'12.323%': True,
+                     '12%'    : True,
+                     '12%33'  : False,
+                     'asb%'   : False}
         *) '  $xxx '
         *) ' 12,347': 
             ==> Note: The regex search should return True/False accordingly 
@@ -76,6 +82,7 @@ def cols_possible_nums(df, cat_cols, threshold = 5):
     cols = []
     for x in cat_cols:
         n_percent_sign = sum(df[x].apply(lambda x: (str(x).strip()[-1] == '%')))
+        n_percent_sign = sum(df[x].apply(lambda x: bool(re.match('\d*\.*\d*\%$', str(x).strip())))) 
         n_dollar_sign = sum(df[x].apply(lambda x: bool(re.match('^\$\d+\.*\d{0,2}$', str(x).strip()))))
         n_comma_number = sum(df[x].apply(lambda x: bool(re.search('(?:\,\d{3}$|^\d{0,3}$)', str(x).strip()))))
         if n_percent_sign > threshold or n_dollar_sign > threshold or n_comma_number > threshold:
