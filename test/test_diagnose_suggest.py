@@ -72,6 +72,16 @@ class TestMissingValueAnalysis(unittest.TestCase):
         ds.impute(self.df, 'c', strategy = 'mean')
         self.assertItemsEqual(self.df['c'], [1, 5, 3]*10)
 
+    def test_impute_median(self):
+        ds.cols_with_nulls(self.df)
+        ds.impute(self.df, 'c', strategy = 'median')
+        self.assertItemsEqual(self.df['c'], [1, 5, 3]*10)
+        
+
+    def test_impute_value(self):
+        ds.cols_with_nulls(self.df)
+        ds.impute(self.df, 'a', strategy = 'most_frequent')
+        self.assertItemsEqual(self.df['a'], ['ha']*30)
 
 if __name__ == '__main__':
     unittest.main()
