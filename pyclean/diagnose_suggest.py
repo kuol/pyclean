@@ -6,6 +6,7 @@ Created on Thu Nov 10 15:54:46 2016
 """
 import numpy as np
 import pandas as pd
+from functools import partial
 import re
 
 def main():
@@ -180,22 +181,27 @@ def impute(df, col, strategy = 'value', val = 0):
 #   - String columns:
 #       1. Outlier -- umbalanced TODO
 #=======================================================================
-def detect_outliers_single(df, col, strategy = 'quantile'):
-    if df[col].dtype.name == 'object':
+def detect_outliers_single(s, strategy = 'quantile', return_records = False):
+    if s.dtype.name == 'object':
         print "[Error]: Outlier detection is only for numeric columns at the moment"
         return
     if s.isnull().any():
         print "[Error]: There are missing values in the column. ", \
             "Please drop the column or impute the missing values first."
 
-    s = df[col]
     if strategy == '3sigma': 
         outliers = s[(s-s.mean()).abs() > 3 * s.std()]
     else:
-        outliers = s[(s > s.quantile(.25)) & (s < s.quantile(.75))]
-    return outliers
+        outliers = s[~(s > s.quantile(.25)) & (s < s.quantile(.75))]
+    if return_records:
+        return outliers
+    else:
+        return True if len(outliers) else False
     
-    
+def cols_numeric_outliers(df, num_cols, strategy = 'quantile'):
+    #if_outlier_summary = df[num_cols].apply(partial(detect_outliers_single, strategy))
+    temp = df[num_cols].apply(detect_outliers_single, args = (strategy,))
+    return list(temp[temp].index)
 
 #============================================================================
 # Variability analysis:

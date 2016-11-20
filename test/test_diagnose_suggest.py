@@ -77,11 +77,30 @@ class TestMissingValueAnalysis(unittest.TestCase):
         ds.impute(self.df, 'c', strategy = 'median')
         self.assertItemsEqual(self.df['c'], [1, 5, 3]*10)
         
-
     def test_impute_value(self):
         ds.cols_with_nulls(self.df)
         ds.impute(self.df, 'a', strategy = 'most_frequent')
         self.assertItemsEqual(self.df['a'], ['ha']*30)
 
+class TestOutlierAnalysis(unittest.TestCase):
+    def setUp(self):
+        d = {'a': [5]*28 + [0,0], 
+             'b': list(np.random.normal(0, 1,size = 28)) + [3.1, -3.01],}
+        self.df = pd.DataFrame.from_dict(d)
+    
+    def test_cols_numeric_outliers_quantile(self):
+        temp = ds.cols_numeric_outliers(self.df, ['a','b'])
+        print temp
+        self.assertEqual(temp, ['a','b'])
+
 if __name__ == '__main__':
     unittest.main()
+
+
+
+
+
+
+
+
+
