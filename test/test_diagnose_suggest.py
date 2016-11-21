@@ -84,14 +84,18 @@ class TestMissingValueAnalysis(unittest.TestCase):
 
 class TestOutlierAnalysis(unittest.TestCase):
     def setUp(self):
-        d = {'a': [5]*28 + [0,0], 
-             'b': list(np.random.normal(0, 1,size = 28)) + [3.1, -3.01],}
+        d = {'a': [5]*20 + [4]*10, 
+             'b': list(np.random.normal(0, 1,size = 28)) + [5.1, -12.01],}
         self.df = pd.DataFrame.from_dict(d)
     
     def test_cols_numeric_outliers_quantile(self):
         temp = ds.cols_numeric_outliers(self.df, ['a','b'])
-        print temp
         self.assertEqual(temp, ['a','b'])
+
+    def test_cols_numeric_outliers_3sigma(self):
+        temp = ds.cols_numeric_outliers(self.df, ['a', 'b'], '3sigma')
+        self.assertEqual(temp, ['b'])
+
 
 if __name__ == '__main__':
     unittest.main()
